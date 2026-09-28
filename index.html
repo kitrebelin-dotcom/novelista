@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Novelista</title>
+<style>
+:root{--bg:#F3F4FA;--bar:#fff;--pg:#fff;--tx:#2B2D42;--soft:#8B8EA6;--bd:#E4E5F0;--ac:#6C63FF;--bt:#F2F2FA;--cm:#FFF1AE;--gap:#E7E8F2;--bad:#E15A5A;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14151F;--bar:#1C1D2B;--pg:#22232F;--tx:#EDEDF6;--soft:#8C8FA8;--bd:#2E3042;--ac:#8C7CFF;--bt:#262838;--cm:#4A4020;--gap:#14151F}}
+:root[data-theme="dark"]{--bg:#14151F;--bar:#1C1D2B;--pg:#22232F;--tx:#EDEDF6;--soft:#8C8FA8;--bd:#2E3042;--ac:#8C7CFF;--bt:#262838;--cm:#4A4020;--gap:#14151F}
+html{scroll-padding-top:env(safe-area-inset-top,0px);height:100%}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;height:100%;display:flex;flex-direction:column;background:var(--bg);color:var(--tx);font:15px system-ui,-apple-system,"Segoe UI",sans-serif}
+header{display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--bar);border-bottom:1px solid var(--bd)}
+header b{flex:1;font-size:17px}header span{font-size:12px;color:var(--soft)}
+button{font:inherit;color:inherit;border:0;background:var(--bt);border-radius:10px;min-width:40px;height:40px;padding:0 10px;cursor:pointer}
+button:active{filter:brightness(.92)}button.pri{background:var(--ac);color:#fff}button.on{background:var(--ac);color:#fff}
+main{flex:1;overflow-y:auto;padding:14px 10px 24px;-webkit-overflow-scrolling:touch}
+#ed{max-width:760px;margin:0 auto;background:var(--pg);border:1px solid var(--bd);border-radius:6px;min-height:100%;padding:30px 22px;outline:none;font:var(--fs,18px)/1.75 var(--ff,Georgia,serif);overflow-wrap:anywhere}
+#ed h1{text-align:center;font-size:1.6em;margin:.4em 0}#ed .sub{text-align:center;font-style:italic;margin:0 0 1em}
+#ed h2{text-align:center;font-size:1.25em;margin:1.2em 0 .8em}#ed p,#ed div{margin:0 0 .6em}
+#ed hr.pb{border:0;height:34px;margin:28px -22px;background:var(--gap);position:relative;text-align:center}
+#ed hr.pb::after{content:"· nueva página ·";position:absolute;inset:0;line-height:34px;font:11px system-ui;color:var(--soft)}
+#ed mark{background:var(--cm);color:inherit;border-radius:3px}
+#fmt{display:flex;gap:6px;padding:8px 10px;overflow-x:auto;background:var(--bar);border-top:1px solid var(--bd)}
+#fmt button{flex:none}
+nav{display:flex;background:var(--bar);border-top:1px solid var(--bd);padding-bottom:env(safe-area-inset-bottom,0px)}
+nav button{flex:1;background:none;border-radius:0;height:52px;font-size:12px;line-height:1.3;color:var(--soft)}nav button b{display:block;font-size:19px}
+#sh{position:fixed;left:0;right:0;bottom:0;max-height:76%;background:var(--bar);border-radius:18px 18px 0 0;border:1px solid var(--bd);box-shadow:0 -8px 30px #0004;transform:translateY(105%);transition:transform .22s;display:flex;flex-direction:column;z-index:5;padding-bottom:env(safe-area-inset-bottom,0px)}
+#sh.open{transform:none}#sh h3{margin:0;padding:16px 18px 6px;font-size:17px;display:flex;justify-content:space-between;align-items:center}
+#sb{overflow-y:auto;padding:6px 16px 18px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:13px 12px;margin:6px 0;background:var(--bt);border-radius:12px;width:100%;text-align:left;height:auto}
+.row small{color:var(--soft)}.card{background:var(--bt);border-radius:12px;padding:12px;margin:8px 0}.card q{display:block;color:var(--soft);font-style:italic;font-size:13px;margin-bottom:4px}
+textarea{width:100%;min-height:200px;border:1px solid var(--bd);border-radius:12px;padding:12px;background:var(--pg);color:var(--tx);font:16px/1.5 system-ui;resize:vertical}
+.hint{color:var(--soft);font-size:13px;margin:4px 2px 10px}
+#toast{position:fixed;left:50%;bottom:130px;transform:translateX(-50%);background:#2B2D42;color:#fff;padding:9px 16px;border-radius:20px;font-size:13px;opacity:0;transition:.2s;pointer-events:none;z-index:9}#toast.s{opacity:1}
+.bk{position:fixed;inset:0;background:#0005;z-index:4;display:none}.bk.open{display:block}
+@media print{header,#fmt,nav,#sh,.bk{display:none}main{overflow:visible;padding:0}#ed{border:0}#ed hr.pb{height:0;margin:0;page-break-after:always;background:none}#ed hr.pb::after{content:""}html,body{height:auto;display:block}}
+</style>
+</head>
+<body>
+<header><b>📖 Novelista</b><span id="st"></span><button id="th" title="Tema">🌙</button></header>
+<main><div id="ed" contenteditable="true" spellcheck="true" lang="es" autocapitalize="sentences"></div></main>
+<div id="fmt">
+<button data-c="undo">↶</button><button data-c="redo">↷</button>
+<button data-c="bold"><b>N</b></button><button data-c="italic"><i>K</i></button><button data-c="underline"><u>S</u></button>
+<button data-c="justifyLeft">⟸</button><button data-c="justifyCenter">≡</button><button data-c="justifyRight">⟹</button>
+<button id="fm">A−</button><button id="fp">A+</button>
+<button id="cap">📖 Capítulo</button><button id="pb">⏎ Página</button><button id="cm">💬 Comentar</button>
+</div>
+<nav><button data-s="cap"><b>📑</b>Capítulos</button><button data-s="not"><b>📝</b>Notas</button><button data-s="com"><b>💬</b>Comentarios</button><button data-s="mas"><b>⬇️</b>Exportar</button></nav>
+<div class="bk" id="bk"></div>
+<div id="sh"><h3><span id="sht"></span><button id="shx">✕</button></h3><div id="sb"></div></div>
+<div id="toast"></div>
+<script>
+const $=s=>document.querySelector(s),ed=$('#ed');
+const K='novelista_movil_v1';
+let S={notas:'',com:{},n:0,fs:18,ff:'Georgia,serif',th:''},dl=null;
+const TPL='<h1>Título de tu novela</h1><p class="sub">por Nombre del Autor</p><hr class="pb"><h2>Capítulo 1: El comienzo</h2><p>Empieza a escribir aquí tu historia…</p>';
+function save(){try{localStorage.setItem(K,JSON.stringify({h:ed.innerHTML,S}))}catch(e){}}
+function load(){let d=null;try{d=JSON.parse(localStorage.getItem(K)||'null')}catch(e){}
+ if(d){S=Object.assign(S,d.S);ed.innerHTML=d.h}else ed.innerHTML=TPL;apply()}
+function apply(){ed.style.setProperty('--fs',S.fs+'px');ed.style.setProperty('--ff',S.ff);
+ if(S.th)document.documentElement.dataset.theme=S.th;else delete document.documentElement.dataset.theme;
+ $('#th').textContent=(S.th==='dark'||(!S.th&&matchMedia('(prefers-color-scheme:dark)').matches))?'☀️':'🌙'}
+let tm;function changed(){clearTimeout(tm);tm=setTimeout(()=>{save();stat()},400)}
+function words(){return(ed.innerText.match(/\S+/g)||[]).length}
+function stat(){const w=words();$('#st').textContent=w+' palabras · pág. ~'+(Math.floor(w/300)+1)}
+function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('s');setTimeout(()=>e.classList.remove('s'),2200)}
+ed.addEventListener('input',changed);
+$('#fmt').addEventListener('pointerdown',e=>{if(e.target.closest('button'))e.preventDefault()});
+document.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{ed.focus();document.execCommand(b.dataset.c);changed()});
+$('#fm').onclick=()=>{S.fs=Math.max(13,S.fs-1);apply();changed()};$('#fp').onclick=()=>{S.fs=Math.min(30,S.fs+1);apply();changed()};
+$('#th').onclick=()=>{const d=document.documentElement.dataset.theme==='dark'||(!S.th&&matchMedia('(prefers-color-scheme:dark)').matches);S.th=d?'light':'dark';apply();save()};
+$('#pb').onclick=()=>{ed.focus();document.execCommand('insertHTML',false,'<hr class="pb"><p><br></p>');changed()};
+$('#cap').onclick=()=>{const n=ed.querySelectorAll('h2').length+1;ed.focus();
+ document.execCommand('insertHTML',false,'<hr class="pb"><h2>Capítulo '+n+': Título</h2><p><br></p>');changed();toast('Capítulo agregado: cambia el título')};
+/* Panel inferior */
+const sh=$('#sh'),sb=$('#sb'),bk=$('#bk');
+function open(t,html){$('#sht').textContent=t;sb.innerHTML='';if(typeof html==='string')sb.innerHTML=html;else sb.append(html);sh.classList.add('open');bk.classList.add('open')}
+function close(){sh.classList.remove('open');bk.classList.remove('open');if(S.notaEl)S.notaEl=null;save()}
+$('#shx').onclick=close;bk.onclick=close;
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function cap(){const hs=[...ed.querySelectorAll('h2')];let h='<p class="hint">Toca un capítulo para ir directo ahí.</p>';
+ if(!hs.length)h+='<p class="hint">Aún no hay capítulos. Usa “📖 Capítulo”.</p>';
+ hs.forEach((e,i)=>{const pre=document.createRange();pre.setStart(ed,0);pre.setEndBefore(e);const w=(pre.toString().match(/\S+/g)||[]).length;
+  h+='<button class="row" data-i="'+i+'"><span>'+esc(e.textContent)+'</span><small>pág. ~'+(Math.floor(w/300)+1)+'</small></button>'});
+ open('Capítulos',h);sb.querySelectorAll('.row').forEach(b=>b.onclick=()=>{close();hs[b.dataset.i].scrollIntoView({behavior:'smooth',block:'start'})})}
+function not(){const t=document.createElement('div');t.innerHTML='<p class="hint">Ideas, personajes, cabos sueltos. No forma parte de tu novela ni se exporta con ella.</p><textarea id="nt" placeholder="Escribe aquí tus notas…"></textarea><button class="row" id="fc"><span>👤 Insertar ficha de personaje</span></button><button class="row" id="dn"><span>⬇️ Descargar notas por separado</span></button>';
+ open('Notas',t);const a=$('#nt');a.value=S.notas;a.oninput=()=>{S.notas=a.value;changed()};
+ $('#fc').onclick=()=>{a.value+=(a.value?'\n\n':'')+'FICHA DE PERSONAJE\nNombre:\nEdad:\nApariencia:\nPersonalidad:\nObjetivo:\nConflicto:\n';S.notas=a.value;changed()};
+ $('#dn').onclick=()=>download('notas_de_mi_novela.txt','NOTAS DEL AUTOR\n==============\n\n'+(S.notas||'(sin notas todavía)'))}
+function com(){let h='<p class="hint">Selecciona texto en tu novela y toca “💬 Comentar”.</p>';const ks=Object.keys(S.com);
+ if(!ks.length)h+='<p class="hint">Todavía no hay comentarios.</p>';
+ ks.forEach(k=>{h+='<div class="card"><q>“'+esc(S.com[k].q.slice(0,70))+'”</q>'+esc(S.com[k].t)+'<div style="display:flex;gap:8px;margin-top:8px"><button data-g="'+k+'">Ir al texto</button><button data-d="'+k+'" style="color:var(--bad)">Eliminar</button></div></div>'});
+ if(ks.length)h+='<button class="row" id="dc"><span>⬇️ Descargar comentarios por separado</span></button>';open('Comentarios',h);
+ sb.querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>{const m=ed.querySelector('[data-k="'+b.dataset.g+'"]');close();if(m)m.scrollIntoView({behavior:'smooth',block:'center'});else toast('Ese texto ya no existe')});
+ sb.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{const m=ed.querySelector('[data-k="'+b.dataset.d+'"]');if(m)m.replaceWith(...m.childNodes);delete S.com[b.dataset.d];changed();com()});
+ const dc=$('#dc');if(dc)dc.onclick=()=>download('comentarios_de_mi_novela.txt','COMENTARIOS SOBRE EL MANUSCRITO\n===============================\n\n'+ks.map(k=>'Sobre: "'+S.com[k].q.slice(0,100)+'"\n  -> '+S.com[k].t+'   ('+S.com[k].f+')\n').join('\n'))}
+let rng=null;
+$('#cm').onclick=()=>{const s=getSelection();if(!s.rangeCount||s.isCollapsed||!ed.contains(s.anchorNode)){toast('Primero selecciona un fragmento de texto');return}
+ rng=s.getRangeAt(0).cloneRange();const t=document.createElement('div');t.innerHTML='<p class="hint">Comentario sobre: “'+esc(rng.toString().slice(0,80))+'”</p><textarea id="ct" style="min-height:110px" placeholder="Escribe tu comentario…"></textarea><button class="row pri" id="cg" style="justify-content:center;background:var(--ac);color:#fff"><span>Guardar comentario</span></button>';
+ open('Nuevo comentario',t);$('#cg').onclick=()=>{const v=$('#ct').value.trim();if(!v)return;const k='c'+(++S.n);
+  const m=document.createElement('mark');m.dataset.k=k;try{m.append(rng.extractContents());rng.insertNode(m)}catch(e){toast('No se pudo anclar el comentario');return}
+  S.com[k]={q:m.textContent,t:v,f:new Date().toLocaleString('es')};changed();close();toast('Comentario agregado')}}
+/* Exportar */
+function clean(){const c=ed.cloneNode(true);c.querySelectorAll('mark').forEach(m=>m.replaceWith(...m.childNodes));return c}
+function toMD(n){let o='';n.childNodes.forEach(x=>{if(x.nodeType===3){o+=x.textContent;return}const t=x.tagName.toLowerCase(),i=toMD(x);
+ if(t==='h1')o+='\n# '+i+'\n';else if(t==='h2')o+='\n## '+i+'\n';else if(t==='hr')o+='\n---\n';else if(t==='b'||t==='strong')o+='**'+i+'**';
+ else if(t==='i'||t==='em')o+='*'+i+'*';else if(t==='u')o+='<u>'+i+'</u>';else if(t==='br')o+='\n';else if(t==='p'||t==='div')o+='\n'+i+'\n';else o+=i});return o}
+function download(name,data){const C=window.Capacitor&&Capacitor.Plugins;
+ if(C&&C.Filesystem&&C.Share){C.Filesystem.writeFile({path:name,data:String(data),directory:'CACHE',encoding:'utf8'}).then(r=>C.Share.share({title:name,url:r.uri,dialogTitle:'Guardar o compartir archivo'})).then(()=>toast('Archivo listo ✓')).catch(e=>{if(!/cancel/i.test(String(e&&e.message)))toast('No se pudo exportar')});return}
+ if(dl){dl.save({filename:name,data}).then(()=>toast('Archivo listo ✓')).catch(e=>{if(e&&e.code!=='declined')toast('No se pudo guardar aquí')})}
+ else{try{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data]));a.download=name;a.click();toast('Descargando…')}catch(e){toast('Descarga no disponible')}}}
+function mas(){const items=[['📄 Texto plano (.txt)','txt'],['📝 Markdown (.md)','md'],['🌐 Página web / Word (.html)','html'],['🖨️ PDF / Imprimir','pdf'],['💾 Guardar proyecto completo (.json)','json']];
+ open('Exportar',(function(){let h='<p class="hint">Tu manuscrito se exporta sin notas ni comentarios (esos se descargan aparte desde sus pestañas).</p>';items.forEach(x=>h+='<button class="row" data-x="'+x[1]+'"><span>'+x[0]+'</span></button>');
+ h+='<button class="row" id="ab"><span>📂 Abrir proyecto (.json)</span></button><input type="file" id="fi" accept=".json,application/json" hidden><button class="row" id="nw"><span style="color:var(--bad)">🗑️ Empezar novela nueva</span></button>';return h})());
+ sb.querySelectorAll('[data-x]').forEach(b=>b.onclick=()=>{const c=clean(),k=b.dataset.x;
+  if(k==='txt'){c.querySelectorAll('hr.pb').forEach(h=>h.replaceWith('\f'));download('mi_novela.txt',c.innerText.replace(/\n{3,}/g,'\n\n'))}
+  else if(k==='md')download('mi_novela.md',toMD(c).replace(/\n{3,}/g,'\n\n').trim()+'\n');
+  else if(k==='html'){c.querySelectorAll('hr.pb').forEach(h=>h.replaceWith(Object.assign(document.createElement('div'),{style:'page-break-after:always'})));
+   download('mi_novela.html','<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><title>Mi novela</title><style>body{font-family:Georgia,serif;max-width:720px;margin:40px auto;line-height:1.7;padding:0 18px}h1,h2,.sub{text-align:center}</style></head><body>'+c.innerHTML+'</body></html>')}
+  else if(k==='pdf'){close();try{print()}catch(e){toast('Imprimir no está disponible aquí; usa .html y luego imprime')}}
+  else download('mi_novela.novela.json',JSON.stringify({h:ed.innerHTML,S}))});
+ $('#ab').onclick=()=>$('#fi').click();
+ $('#fi').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);ed.innerHTML=d.h;S=Object.assign(S,d.S);apply();save();stat();close();toast('Proyecto abierto')}catch(x){toast('Archivo no válido')}};r.readAsText(f)};
+ $('#nw').onclick=()=>{if(confirm('¿Empezar una novela nueva? Se borrará lo que no hayas descargado.')){ed.innerHTML=TPL;S.notas='';S.com={};S.n=0;save();stat();close()}}}
+document.querySelectorAll('nav [data-s]').forEach(b=>b.onclick=()=>({cap,not,com,mas})[b.dataset.s]());
+load();stat();
+(async()=>{try{dl=await claude.use('downloads')}catch(e){dl=null}})();
+</script>
+</body>
+</html>
